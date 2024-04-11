@@ -55,12 +55,30 @@ public class ShopService {
     }else throw new IllegalStateException();
   }
 
+  @Transactional
+  /*
+  First Level Cache = 한 번의 트랜잭션에서 조회된 적 있는 데이터는 컨텍스트에서 관리
+                      방금 생성한 데이터나 여러번 조회하는 데이터의 성능 향상
+   */
+  public void testIdentity(){
+    Item item = Item.builder().build();
+    Long id = itemRepository.save(item).getId();
 
+    Item a = itemRepository.findById(id).get();
+    Item b = itemRepository.findById(id).get();
+    // a,b가 참조하고 있는 영속성 컨텍스트의 객체가 같기 때문에 true 반환
+    log.info("is same object : {}", a==b);
+  }
 
-
-
-
-
+  @Transactional
+  public void testDirtyChecking(){
+    /*
+    dirty Checking = 트랜젝션 내부에서 Entity 수정시 변경 사항에 대한 update문 자동 생성
+                     즉, 내가 실행하지 않은 Hibernate: update 자동 생성
+     */
+    itemRepository.findAll().stream()
+            .forEach(item -> item.setStock(100));
+  }
 
 
 

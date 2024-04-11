@@ -47,4 +47,19 @@ public class ParentService {
     throw new RuntimeException("parent throw");
   }
 
+  //@Transactional
+  public void noneThree(){
+    customerRepository.save(Customer.builder()
+            .name("Parent None1")
+            .build())  ;
+    try {
+      childService.never();
+    } catch (Exception e){
+      log.warn(e.getMessage());
+    }
+    customerRepository.save(Customer.builder()
+            .name("Parent None 2")
+            .build());
+    throw new RuntimeException("parent throw");
+  }
 }
