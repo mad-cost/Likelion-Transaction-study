@@ -21,6 +21,10 @@ public class Item {
   private Integer price;
   @Setter
   private Integer stock; // 재고
+  
+  // 동시성 문제 제어
+  @Version
+  private Long version;
 
   @ManyToOne
   private Shop shop;

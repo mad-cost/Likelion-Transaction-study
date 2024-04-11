@@ -80,8 +80,38 @@ public class ShopService {
             .forEach(item -> item.setStock(100));
   }
 
+  // 낙관적 락 TestCode 작성
+  @Transactional
+  public void decreaseStockOpt(){
+    Item item = itemRepository.findById(1L)
+            .orElseThrow();
+    item.setStock(item.getStock() - 10);
+    itemRepository.save(item);
+  }
 
+  @Transactional
+  // 비관적 락 / Shared Lock Test
+  public void decreaseStockShare(){
+    Item item = itemRepository.findItemForShare(1L)
+            .orElseThrow();
+    item.setStock(item.getStock() - 10);
+    itemRepository.save(item);
+  }
 
+  @Transactional
+  // 비관적 락 / Exclusive Lock Test
+  public void decreaseStockUpdate(){
+    Item item = itemRepository.findItemForUpdate(1L)
+            .orElseThrow();
+    item.setStock(item.getStock() - 10);
+    itemRepository.save(item);
+  }
 
-
+  @Transactional
+  public void decreaseStockOver(){
+    // ItemRepository의 findById가 Exclusive Lock이 걸려있다.
+    Item item = itemRepository.findById(1L).orElseThrow();
+    item.setStock(item.getStock() - 10);
+    itemRepository.save(item);
+  }
 }
